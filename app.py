@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Configuración de MySQL
 app.config['MYSQL_HOST'] = os.environ.get('MYSQL_DATABASE_HOST', 'localhost')  # Se toma del entorno, si no se encuentra se pone 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''  # Asegúrate de poner tu contraseña si es necesaria
+app.config['MYSQL_PASSWORD'] = 'root'  # Asegúrate de poner tu contraseña si es necesaria
 app.config['MYSQL_DB'] = 'mydatabase'
 
 mysql = MySQL(app)  # Asegúrate de pasar la app a MySQL()
