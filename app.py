@@ -22,14 +22,20 @@ def hello():
 
 @app.route('/read from database')
 def read():
+    conn = mysql.connection  # Establecer la conexión con la BD
+    cursor = conn.cursor()   # Crear el cursor
+
     cursor.execute("SELECT * FROM employees")
-    row = cursor.fetchone()
+    rows = cursor.fetchall()  # Obtener todas las filas
+
     result = []
-    while row is not None:
-        result.append(f"{row[0]} - {row[1]}")  # Muestra id y nombre
-        row = cursor.fetchone()
+    for row in rows:
+        result.append(f"{row[0]} - {row[1]}")  # Formato: id - nombre
+
+    cursor.close()  # Cerrar el cursor
 
     return "<br>".join(result)  # Mostrar cada empleado en una línea
+
 
 if __name__ == "__main__":
     app.run(debug=True)  # Habilitamos debug para mayor facilidad en el desarrollo
