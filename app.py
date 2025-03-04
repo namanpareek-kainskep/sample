@@ -28,7 +28,7 @@ def read():
     row = cur.fetchone()
     result = []
     while row is not None:
-        result.append(row[0])  # Aquí puedes acceder a las columnas de la fila
+        result.append(str(row[0]))  # Aquí puedes acceder a las columnas de la fila
         row = cur.fetchone()
 
     cur.close()  # No olvides cerrar el cursor después de usarlo
