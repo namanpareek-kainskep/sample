@@ -1,23 +1,16 @@
 import os
 from flask import Flask
-from flaskext.mysql import MySQL      # For newer versions of flask-mysql 
-# from flask.ext.mysql import MySQL   # For older versions of flask-mysql
+from flask_mysqldb import MySQL
+
 app = Flask(__name__)
 
-mysql = MySQL()
+# Configuración de MySQL
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_DATABASE_HOST', 'localhost')  # Se toma del entorno, si no se encuentra se pone 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''  # Asegúrate de poner tu contraseña si es necesaria
+app.config['MYSQL_DB'] = 'mydatabase'
 
-mysql_database_host = 'MYSQL_DATABASE_HOST' in os.environ and os.environ['MYSQL_DATABASE_HOST'] or  'localhost'
-
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'db_user'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'Passw0rd'
-app.config['MYSQL_DATABASE_DB'] = 'employee_db'
-app.config['MYSQL_DATABASE_HOST'] = mysql_database_host
-mysql.init_app(app)
-
-conn = mysql.connect()
-
-cursor = conn.cursor()
+mysql = MySQL(app)  # Asegúrate de pasar la app a MySQL()
 
 @app.route("/")
 def main():
@@ -29,14 +22,17 @@ def hello():
 
 @app.route('/read from database')
 def read():
-    cursor.execute("SELECT * FROM employees")
-    row = cursor.fetchone()
+    # Usamos el contexto de Flask para obtener la conexión
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM employees")
+    row = cur.fetchone()
     result = []
     while row is not None:
-      result.append(row[0])
-      row = cursor.fetchone()
+        result.append(row[0])  # Aquí puedes acceder a las columnas de la fila
+        row = cur.fetchone()
 
-    return ",".join(result)
+    cur.close()  # No olvides cerrar el cursor después de usarlo
+    return ",".join(result)  # Regresar los resultados como una cadena de texto
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)  # Habilitamos debug para mayor facilidad en el desarrollo
