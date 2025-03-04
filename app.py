@@ -22,17 +22,14 @@ def hello():
 
 @app.route('/read from database')
 def read():
-    # Usamos el contexto de Flask para obtener la conexión
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM employees")
-    row = cur.fetchone()
+    cursor.execute("SELECT * FROM employees")
+    row = cursor.fetchone()
     result = []
     while row is not None:
-        result.append(str(row[0]))  # Aquí puedes acceder a las columnas de la fila
-        row = cur.fetchone()
+        result.append(f"{row[0]} - {row[1]}")  # Muestra id y nombre
+        row = cursor.fetchone()
 
-    cur.close()  # No olvides cerrar el cursor después de usarlo
-    return ",".join(result)  # Regresar los resultados como una cadena de texto
+    return "<br>".join(result)  # Mostrar cada empleado en una línea
 
 if __name__ == "__main__":
     app.run(debug=True)  # Habilitamos debug para mayor facilidad en el desarrollo
