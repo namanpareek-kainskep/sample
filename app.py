@@ -1,41 +1,47 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
 # Configuración de MySQL
-app.config['MYSQL_HOST'] = os.environ.get('MYSQL_DATABASE_HOST', 'localhost')  # Se toma del entorno, si no se encuentra se pone 'localhost'
+
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_DATABASE_HOST', 'localhost')
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'  
+app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'mydatabase'
 
-mysql = MySQL(app)  # Asegúrate de pasar la app a MySQL()
+mysql = MySQL(app)
+
+
+#Rutas de la Aplicación
+
 
 @app.route("/")
-def main():
-    return "Welcome!"
+def home():
+    """Página de inicio"""
+    return render_template("index.html")  # Renderiza la plantilla HTML
 
-@app.route('/how are you')
-def hello():
-    return 'I am good, how about you?'
-
-@app.route('/read from database')
+@app.route("/empleados")
 def read():
-    conn = mysql.connection  # Establecer la conexión con la BD
-    cursor = conn.cursor()   # Crear el cursor
+    """Consulta la base de datos y muestra los empleados en una tabla HTML"""
+    try:
+        conn = mysql.connection
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM employees")
-    rows = cursor.fetchall()  # Obtener todas las filas
+        cursor.execute("SELECT id, name FROM employees")  # Asegúrate de que la tabla 'employees' existe
+        rows = cursor.fetchall()
 
-    result = []
-    for row in rows:
-        result.append(f"{row[0]} - {row[1]}")  # Formato: id - nombre
+        cursor.close()
+        return render_template("empleados.html", employees=rows)  # Enviar datos a la plantilla HTML
 
-    cursor.close()  # Cerrar el cursor
+    except Exception as e:
+        return render_template("error.html", error=str(e))  # Página de error si hay problemas
 
-    return "<br>".join(result)  # Mostrar cada empleado en una línea
+
+
+#Iniciar Servidor
 
 
 if __name__ == "__main__":
-    app.run(debug=True)  # Habilitamos debug para mayor facilidad en el desarrollo
+    app.run(debug=True)
