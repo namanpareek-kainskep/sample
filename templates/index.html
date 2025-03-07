@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplicación WEB</title>
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Bienvenido a Mi Aplicación Web</h1>
-        <p>Consulta la lista de empleados aquí:</p>
-        <a href="empleados.html" class="btn">Ver Empleados</a>
+        <h1>Bienvenido a Nuestra Aplicación Web</h1>
+        <p>Consulta la lista de Integrantes del grupo aquí:</p>
+        <a href="{{ url_for('read') }}">Ver Integrantes del grupo</a>
     </div>
 </body>
 </html>

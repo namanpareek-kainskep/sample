@@ -29,7 +29,7 @@ def read():
         conn = mysql.connection
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, name FROM employees")  # Asegúrate de que la tabla 'employees' existe
+        cursor.execute("SELECT id, name FROM users")  # Asegúrate de que la tabla 'employees' existe
         rows = cursor.fetchall()
 
         cursor.close()
