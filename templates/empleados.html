@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Empleados</title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Empleados</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+            </tr>
+            {% for empleado in employees %}
+            <tr>
+                <td>{{ empleado[0] }}</td>
+                <td>{{ empleado[1] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a href="{{ url_for('home') }}" class="btn">Volver al Inicio</a>
+    </div>
+</body>
+</html>
