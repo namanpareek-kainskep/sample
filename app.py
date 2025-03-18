@@ -1,42 +1,47 @@
 import os
-from flask import Flask
-from flaskext.mysql import MySQL      # For newer versions of flask-mysql 
-# from flask.ext.mysql import MySQL   # For older versions of flask-mysql
+from flask import Flask, render_template
+from flask_mysqldb import MySQL
+
 app = Flask(__name__)
 
-mysql = MySQL()
+# Configuración de MySQL
 
-mysql_database_host = 'MYSQL_DATABASE_HOST' in os.environ and os.environ['MYSQL_DATABASE_HOST'] or  'localhost'
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_DATABASE_HOST', 'localhost')
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'mydatabase'
 
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'db_user'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'Passw0rd'
-app.config['MYSQL_DATABASE_DB'] = 'employee_db'
-app.config['MYSQL_DATABASE_HOST'] = mysql_database_host
-mysql.init_app(app)
+mysql = MySQL(app)
 
-conn = mysql.connect()
 
-cursor = conn.cursor()
+#Rutas de la Aplicación
+
 
 @app.route("/")
-def main():
-    return "Welcome!"
+def home():
+    """Página de inicio"""
+    return render_template("index.html")  # Renderiza la plantilla HTML
 
-@app.route('/how are you')
-def hello():
-    return 'I am good, how about you?'
-
-@app.route('/read from database')
+@app.route("/empleados")
 def read():
-    cursor.execute("SELECT * FROM employees")
-    row = cursor.fetchone()
-    result = []
-    while row is not None:
-      result.append(row[0])
-      row = cursor.fetchone()
+    """Consulta la base de datos y muestra los empleados en una tabla HTML"""
+    try:
+        conn = mysql.connection
+        cursor = conn.cursor()
 
-    return ",".join(result)
+        cursor.execute("SELECT id, name FROM employees")  # Asegúrate de que la tabla 'employees' existe
+        rows = cursor.fetchall()
+
+        cursor.close()
+        return render_template("empleados.html", employees=rows)  # Enviar datos a la plantilla HTML
+
+    except Exception as e:
+        return render_template("error.html", error=str(e))  # Página de error si hay problemas
+
+
+
+#Iniciar Servidor
+
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
